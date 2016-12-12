@@ -8,6 +8,7 @@ sys.path.append(WORK_SPACE_PATH)
 sys.path.append(WORK_SPACE_PATH + os.sep + 'src')
 import sdpcsp
 
+
 def main():
     """
     Main:
@@ -29,12 +30,17 @@ def main():
         Last part:
         1 display the result of claasification
     """
-
+    # parametter setting
     eeg_reader = sdpcsp.EEGReader()
     eeg_preprossor = sdpcsp.PreProcess()
     eeg_extractor = sdpcsp.FeatureExtractor()
     eeg_classifier = sdpcsp.Classifier()
     eeg_screen = sdpcsp.Screen()
+
+    pass_band = [10, 35]
+    filters_number = 2
+    sample_frquency = 512
+
 
     # read train_data and test_data from certain directory
     train_data, train_labels, test_data, test_labels = eeg_reader.getdataset(
@@ -42,22 +48,22 @@ def main():
 
     # preprocess train data
     train_data, train_labels = eeg_preprossor.preprocesstraindata(
-        train_data, train_labels, [9, 30], 512)
+        train_data, train_labels, pass_band, sample_frquency)
     # for two-class situation
-    train_data = train_data[:, :, train_labels != 2]
-    train_labels = train_labels[train_labels != 2]
+    train_data = train_data[:, :, train_labels != 3]
+    train_labels = train_labels[train_labels != 3]
     # train features exctractor
     filters, features_train = eeg_extractor.csptrain(
-        train_data, train_labels, 2)
+        train_data, train_labels, filters_number)
     # train classifier
     classifier = eeg_classifier.trainclassifier(features_train, train_labels)
 
     # preprocess test data
     test_data, test_labels = eeg_preprossor.preprocesstestdata(
-        test_data, test_labels, [9, 30], 512)
+        test_data, test_labels, pass_band, sample_frquency)
     # for two-class situation
-    test_data = test_data[:, :, test_labels != 2]
-    test_labels = test_labels[test_labels != 2]
+    test_data = test_data[:, :, test_labels != 3]
+    test_labels = test_labels[test_labels != 3]
     # extractor features
     test_features = eeg_extractor.featureextract(filters, test_data)
     # classification

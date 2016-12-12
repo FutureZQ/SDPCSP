@@ -277,14 +277,18 @@ class FeatureExtractor():
 
     def __caculatedatapower(self, data_spatial_filted):
         feature_number = np.shape(data_spatial_filted)[2]
-        data_len = np.shape(data_spatial_filted)[0]
         feature_dimension = np.shape(data_spatial_filted)[1]
         features = np.zeros((feature_number, feature_dimension))
+
         for i in range(0, feature_number):
             temp_data = data_spatial_filted[:, :, i]
             for j in range(0, feature_dimension):
                 features[i, j] = np.sum(temp_data[:, j] * temp_data[:, j])
-        features = np.log10(features / data_len)
+
+        features_sum = np.sum(features * features, axis=1)
+        features_sum = np.column_stack((features_sum, features_sum))
+        features = features / features_sum
+        features = np.log10(features)
         return features
 
     def __spatialfilt(self, filters, data):
@@ -306,7 +310,7 @@ class FeatureExtractor():
         a_matrix = np.matrix(cov_matrix_list[0])
         hy_matrix = np.dot(b_matrix.I, a_matrix)
         weight, vector = np.linalg.eig(hy_matrix)
-        index = np.argsort(weight)
+        index = np.argsort(weight)[::-1]
         vector = vector[:, index]
         vector_row_number = np.shape(vector)[0]
         filters = np.zeros(shape=[vector_row_number, filter_number])
