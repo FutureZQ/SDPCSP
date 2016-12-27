@@ -73,8 +73,8 @@ def __spatialfilt(filters, data):
 
 
 def __getcspfilter(cov_matrix_list, filter_number=2):
-    if filter_number % 2 != 0:
-        raise FilterNumberError('filter number must be Even')
+    # if filter_number % 2 != 0:
+    #     raise FilterNumberError('filter number must be Even')
     b_matrix = np.matrix(cov_matrix_list[0] + cov_matrix_list[1])
     a_matrix = np.matrix(cov_matrix_list[0])
     hy_matrix = np.dot(b_matrix.I, a_matrix)
